@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang='en-us'>
+
+<head>
+	<meta charset="UTF-8">
+	<meta nam"viewport" content="width=device-width, initial-scale=1.0">
+	<title>FastAPI test page</title>
+	<link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}">
+</head>
+
+<body>
+	<h1>Fast API Machine Learning Project</h1>
+	<br><br>
+	<h2>Book Recommendation</h2>
+	<form id='bookForm' method='post'>
+		<label for='book'>Book:</label>
+		<input type='text' id='book' name='book' required>
+		<br><br>
+		<button type='submit'>Submit</button>
+	</form>
+
+	<script>
+		document.getElementById('bookForm').onsubmit = function(event) {
+					let book = document.getElementById('book').value.trim();
+					if (!book) {
+						alert('Please neter a book name!');
+							event.preventDefault();
+							return;
+					}
+
+					this.action = `/book/${encodeURIComponent(book)}`
+					this.method = 'post';
+		};
+	</script>
+
+</body>
+</html>
