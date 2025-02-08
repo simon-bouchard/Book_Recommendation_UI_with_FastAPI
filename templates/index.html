@@ -3,7 +3,7 @@
 
 <head>
 	<meta charset="UTF-8">
-	<meta nam"viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>FastAPI test page</title>
 	<link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}">
 </head>
@@ -12,7 +12,7 @@
 	<h1>Fast API Machine Learning Project</h1>
 	<br><br>
 	<h2>Book Recommendation</h2>
-	<form id='bookForm' method='post'>
+	<form id='bookForm' method='get'>
 		<label for='book'>Book:</label>
 		<input type='text' id='book' name='book' required>
 		<br><br>
@@ -28,8 +28,8 @@
 							return;
 					}
 
+					this.method = 'get';
 					this.action = `/book/${encodeURIComponent(book)}`
-					this.method = 'post';
 		};
 	</script>
 

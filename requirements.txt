@@ -2,6 +2,9 @@ fastapi
 uvicorn
 jinja2
 python-multipart
-pymongo[srv]
 motor
 pandas
+pymongo
+pydantic[dotenv]
+python-dotenv
+pydantic[email]
