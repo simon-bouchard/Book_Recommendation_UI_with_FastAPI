@@ -79,7 +79,7 @@ async def book_recommendation(request: Request, isbn: str):
 
 @router.get('/logout')
 async def logout():
-    response = RedirectResponse(url='/login', status_code=HTTP_303_SEE_OTHER)
+    response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
 
     response.delete_cookie(key='access_token')
 
