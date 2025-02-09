@@ -40,12 +40,17 @@ def profile_page(request: Request, current_user: dict = Depends(get_current_user
 
 @router.post('/rating')
 async def new_rating(current_user: dict = Depends(get_current_user), isbn: str = Form(...), comment: str = Form(...), rating: int = Form(...)):
+
     if not current_user:
         return RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
 
-    ratings.insert_one({'user_id': current_user['_id'], 'isbn': isbn, 'rating': rating, 'comment': comment})
+    await ratings.update_one(
+        {'user_id': current_user['_id'], 'isbn': isbn}, 
+        {"$set": {'rating': rating, 'comment': comment}},
+        upsert=True
+    )
 
-    return {'message': f'Rating submitted successfully!'}
+    return {'message': f'Rating successfully submitted/updated!'}
 
 @router.get('/book/{isbn}', response_class=HTMLResponse)
 async def book_recommendation(request: Request, isbn: str): 
@@ -72,4 +77,11 @@ async def book_recommendation(request: Request, isbn: str):
     
     return templates.TemplateResponse('book.html', {"request": request, "book": book})
 
+@router.get('/logout')
+async def logout():
+    response = RedirectResponse(url='/login', status_code=HTTP_303_SEE_OTHER)
+
+    response.delete_cookie(key='access_token')
+
+    return response
 
