@@ -1,5 +1,5 @@
 import pandas as pd
-from fastapi import APIRouter, HTTPException, Form, Request, FastAPI, Depends, status
+from fastapi import APIRouter, HTTPException, Form, Request, FastAPI, Depends, status, Body
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -35,16 +35,23 @@ def signup_page(request: Request):
 @router.get('/profile')
 def profile_page(request: Request, current_user: dict = Depends(get_current_user)):
     if not current_user:
-        return RedirectResponse(ufl='/login', status_code=status.HTTP_303_SEE_OTHER)
+        return RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
     return templates.TemplateResponse('profile.html', {'request': request, 'user': current_user})
 
 @router.post('/rating')
-async def new_rating(current_user: dict = Depends(get_current_user), isbn: str = Form(...), comment: str = Form(...), rating: int = Form(...)):
+async def new_rating(current_user: dict = Depends(get_current_user), data: dict = Body(...)):
 
     if not current_user:
         return RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
 
-    await ratings.update_one(
+    isbn = data.get('isbn')
+    rating = data.get('rating')
+    comment = data.get('comment')
+
+    if not isbn or not rating:
+        raise HTTPException(status_code=400, detail='Missing required fields')
+
+    ratings.update_one(
         {'user_id': current_user['_id'], 'isbn': isbn}, 
         {"$set": {'rating': rating, 'comment': comment}},
         upsert=True
@@ -61,7 +68,10 @@ async def book_recommendation(request: Request, isbn: str):
         {"$group": {"_id": "$isbn", "avg_rating": {"$avg": "$rating"}}}
     ]
 
-    average = round(list(ratings.aggregate(pipeline))[1]['avg_rating'], 2)
+    average = list(ratings.aggregate(pipeline))
+
+    if average: 
+        average = round(average[0]['avg_rating'], 2)
 
     if not book: 
         raise HTTPException(status_code=404, detail='Book not found')

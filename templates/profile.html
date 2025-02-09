@@ -29,13 +29,18 @@
 
 	<script>
 	document.getElementById("ratingForm").onsubmit = async function(event) {
-    		event.preventDefault(); // Prevent page reload
+    		event.preventDefault();
 
-    		let formData = new FormData(this);
-    
+			let data = {
+		   	 	isbn: document.getElementById("isbn").value,
+			    rating: document.getElementById("rating").value,
+			    comment: document.getElementById("comment").value
+			};
+
     		let response = await fetch("/rating", {
         		method: "POST",
-        		body: formData,
+				headers: { 'Content-Type': 'application/json' },
+        		body: JSON.stringify(data),
 				redirect: 'manual'
     		});
 
@@ -44,6 +49,7 @@
 			} else {
 				let result = await response.json();
 				alert(result.message);
+			}
 };
 </script>
 
