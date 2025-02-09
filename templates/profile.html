@@ -14,7 +14,7 @@
 	<h2>Profile</h2>
 	<br>
 	<h3>Post New Rating</h3>
-	<form id='RatingForm' method='post' action='/rating'>
+	<form id='ratingForm'>
 		<label for='isbn'>Book ISBN:</label>
 		<input type='text' id='isbn' name='isbn' required>
 		<br><br>
@@ -26,6 +26,26 @@
 		<br><br>
 		<button type='submit'>Submit</button>
 	</form>
+
+	<script>
+	document.getElementById("ratingForm").onsubmit = async function(event) {
+    		event.preventDefault(); // Prevent page reload
+
+    		let formData = new FormData(this);
+    
+    		let response = await fetch("/rating", {
+        		method: "POST",
+        		body: formData,
+				redirect: 'manual'
+    		});
+
+			if (response.redirected) {
+				window.location.href = response.url;
+			} else {
+				let result = await response.json();
+				alert(result.message);
+};
+</script>
 
 	<br><br>
 	<a href='/logout'>Logout</a>

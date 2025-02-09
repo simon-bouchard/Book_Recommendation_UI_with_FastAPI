@@ -1,6 +1,6 @@
 import pandas as pd
-from fastapi import APIRouter, HTTPException, Form, Request, FastAPI, Depends
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi import APIRouter, HTTPException, Form, Request, FastAPI, Depends, status
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo import MongoClient
@@ -41,9 +41,9 @@ def profile_page(request: Request, current_user: dict = Depends(get_current_user
 @router.post('/rating')
 async def new_rating(current_user: dict = Depends(get_current_user), isbn: str = Form(...), comment: str = Form(...), rating: int = Form(...)):
     if not current_user:
-        return RedirectResponse(ufl='/login', status_code=status.HTTP_303_SEE_OTHER)
+        return RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
 
-    await ratings.insert_one({'user_id': current_user._id, 'isbn': isbn, 'rating': rating, 'comment': comment})
+    ratings.insert_one({'user_id': current_user['_id'], 'isbn': isbn, 'rating': rating, 'comment': comment})
 
     return {'message': f'Rating submitted successfully!'}
 
