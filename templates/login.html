@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang='en-us'>
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>FastAPI test page</title>
+	<link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}">
+</head>
+
+<body>
+	<h1>Fast API Machine Learning Project</h1>
+	<br><br>
+	<h2>Log in</h2>
+	<form id='login' method='post' action='/auth/login'>
+		<input type='text' name='username' placeholder='Username' required>
+		<input type='text' name='password' placeholder='password' required>
+		<button type='submit'>Login</button>
+	</form>
+	<br><br>
+	<h2>Sign up</h2>
+	<form id='signup' method='post' action='/auth/signup'>
+		<label for='username'>Username:</label>
+		<input type='text' id='username' name='username' required>
+		<br><br>
+		<label for='email'>Email:</label>
+		<input type='text' id='email' name='email'>
+		<br>
+		<label for='password'>Password:</label>
+		<input type='text' id='password' name='password' required>
+		<br>
+		<label for='repeat_password'>Repeat Password:</label>
+		<input type='text' id='repeat_password' name='repeat_password' required>
+		<br>
+		<button type='submit'>Submit</button>
+	</form>
+
+</body>
+</html>

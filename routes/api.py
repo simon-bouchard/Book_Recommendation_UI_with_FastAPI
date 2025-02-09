@@ -1,10 +1,14 @@
 import pandas as pd
-from fastapi import APIRouter, HTTPException, Form, Request
+from fastapi import APIRouter, HTTPException, Form, Request, FastAPI, Depends
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
+from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo import MongoClient
 import os
 from dotenv import load_dotenv
+import jwt
+from datetime import datetime, timedelta
+from app.auth import get_current_user
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -24,6 +28,25 @@ client = MongoClient(os.getenv('MONGO_URI'))
 db = client['book-recommendation']
 ratings = db['ratings']
 
+@router.get('/login', response_class=HTMLResponse)
+def signup_page(request: Request):
+    return templates.TemplateResponse('login.html', {'request': request})
+
+@router.get('/profile')
+def profile_page(request: Request, current_user: dict = Depends(get_current_user)):
+    if not current_user:
+        return RedirectResponse(ufl='/login', status_code=status.HTTP_303_SEE_OTHER)
+    return templates.TemplateResponse('profile.html', {'request': request, 'user': current_user})
+
+@router.post('/rating')
+async def new_rating(current_user: dict = Depends(get_current_user), isbn: str = Form(...), comment: str = Form(...), rating: int = Form(...)):
+    if not current_user:
+        return RedirectResponse(ufl='/login', status_code=status.HTTP_303_SEE_OTHER)
+
+    await ratings.insert_one({'user_id': current_user._id, 'isbn': isbn, 'rating': rating, 'comment': comment})
+
+    return {'message': f'Rating submitted successfully!'}
+
 @router.get('/book/{isbn}', response_class=HTMLResponse)
 async def book_recommendation(request: Request, isbn: str): 
     book = books_data.get(isbn)
@@ -33,7 +56,7 @@ async def book_recommendation(request: Request, isbn: str):
         {"$group": {"_id": "$isbn", "avg_rating": {"$avg": "$rating"}}}
     ]
 
-    average = round(list(ratings.aggregate(pipeline))[0]['avg_rating'], 2)
+    average = round(list(ratings.aggregate(pipeline))[1]['avg_rating'], 2)
 
     if not book: 
         raise HTTPException(status_code=404, detail='Book not found')
@@ -48,3 +71,5 @@ async def book_recommendation(request: Request, isbn: str):
     }
     
     return templates.TemplateResponse('book.html', {"request": request, "book": book})
+
+

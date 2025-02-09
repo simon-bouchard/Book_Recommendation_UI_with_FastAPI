@@ -8,3 +8,7 @@ pymongo
 pydantic[dotenv]
 python-dotenv
 pydantic[email]
+passlib[bcrypt]
+pyjwt
+passlib
+secrets
