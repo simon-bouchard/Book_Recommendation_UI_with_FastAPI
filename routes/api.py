@@ -1,5 +1,5 @@
 import pandas as pd
-from fastapi import APIRouter, HTTPException, Form, Request, FastAPI, Depends, status, Body
+from fastapi import APIRouter, HTTPException, Form, Request, FastAPI, Depends, status, Body, Query, BackgroundTasks
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 import jwt
 from datetime import datetime, timedelta
 from app.auth import get_current_user
+from models.book_model import reload_model, get_recommendations
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -39,7 +40,7 @@ def profile_page(request: Request, current_user: dict = Depends(get_current_user
     return templates.TemplateResponse('profile.html', {'request': request, 'user': current_user})
 
 @router.post('/rating')
-async def new_rating(current_user: dict = Depends(get_current_user), data: dict = Body(...)):
+async def new_rating(current_user = Depends(get_current_user), data: dict = Body(...), background_tasks = Depends(BackgroundTasks)):
 
     if not current_user:
         return RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
@@ -56,6 +57,8 @@ async def new_rating(current_user: dict = Depends(get_current_user), data: dict 
         {"$set": {'rating': rating, 'comment': comment}},
         upsert=True
     )
+
+    background_tasks.add_task(reload_model)
 
     return {'message': f'Rating successfully submitted/updated!'}
 
@@ -86,6 +89,17 @@ async def book_recommendation(request: Request, isbn: str):
     }
     
     return templates.TemplateResponse('book.html', {"request": request, "book": book})
+
+@router.get('/recommend')
+async def recommend_books(book: str = Query(...), isbn: bool = True):
+    recommendations = await get_recommendations(book, isbn)
+
+    if 'error' in recommendations:
+        raise HTTPException(status_code=404, detail=recommendations['error'])
+    if recommendations:
+        return recommendations
+    else:
+        raise HTTPException(status_code=404, detail="Book not found (books with less than 100 ratings can't have recommendations.")
 
 @router.get('/logout')
 async def logout():

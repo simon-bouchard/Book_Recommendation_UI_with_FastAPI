@@ -14,7 +14,7 @@
 	<h2>Book Recommendation</h2>
 	<p>Example usage: 0446672211 (Where the Heart Is (Oprah's Book Club (Paperback)))
 	<br>
-	<form id='bookForm' method='get'>
+	<form id='bookForm'>
 		<label for='book'>Book ISBN:</label>
 		<input type='text' id='book' name='book' required>
 		<br>
@@ -23,6 +23,8 @@
 
 	<script>
 		document.getElementById('bookForm').onsubmit = function(event) {
+					event.preventDefault();
+
 					let book = document.getElementById('book').value.trim();
 					if (!book) {
 						alert('Please neter a book name!');
@@ -30,8 +32,7 @@
 							return;
 					}
 
-					this.method = 'get';
-					this.action = `/book/${encodeURIComponent(book)}`
+					window.location.href = `/book/${encodeURIComponent(book)}`
 		};
 	</script>
 

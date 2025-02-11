@@ -1,11 +1,18 @@
-from fastapi import FastAPI, Request, Form
+from fastapi import FastAPI, Request, Form, BackgroundTasks
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from routes.api import router 
 from app.auth import router as auth_router
+from models.book_model import reload_model
 
 app = FastAPI()
+
+'''
+@app.on_event('startup')
+async def startup_event():
+    await reload_model()
+'''
 
 app.mount('/static', StaticFiles(directory='static'), name='static')
 
