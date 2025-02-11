@@ -14,6 +14,7 @@ from models.book_model import reload_model, get_recommendations
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
+'''
 BOOKS_CSV = 'data/BX-Books.csv'
 
 try:
@@ -23,11 +24,13 @@ try:
 except Exception as e:
     print(f'Error loading books: {e}')
     books_data = {}
+'''
 
 load_dotenv()
 client = MongoClient(os.getenv('MONGO_URI'))
 db = client['book-recommendation']
 ratings = db['ratings']
+books = db['Books']
 
 @router.get('/login', response_class=HTMLResponse)
 def signup_page(request: Request):
@@ -64,7 +67,9 @@ async def new_rating(current_user = Depends(get_current_user), data: dict = Body
 
 @router.get('/book/{isbn}', response_class=HTMLResponse)
 async def book_recommendation(request: Request, isbn: str): 
-    book = books_data.get(isbn)
+#    book = books_data.get(isbn)
+
+    book = books.find_one({'isbn': isbn})
 
     pipeline = [
         {"$match": {"isbn": isbn}},
@@ -79,6 +84,7 @@ async def book_recommendation(request: Request, isbn: str):
     if not book: 
         raise HTTPException(status_code=404, detail='Book not found')
 
+    '''
     book = {
             'isbn': isbn,
             'title': book['Book-Title'],
@@ -87,6 +93,7 @@ async def book_recommendation(request: Request, isbn: str):
             'publisher': book['Publisher'],
             'average_rating': average
     }
+    '''
     
     return templates.TemplateResponse('book.html', {"request": request, "book": book})
 
