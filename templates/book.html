@@ -4,16 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Form Response</title>
+	<link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}">
 </head>
 <body>
-    <h2>Book Metadata and Recommendation</h2>
-    <p><strong>Book:</strong> {{ book.title }}</p>
-    <p><strong>ISBN:</strong> {{ book.isbn }}</p>
-    <p><strong>Author:</strong> {{ book.author }}</p>
-    <p><strong>Year of publishing:</strong> {{ book.year }}</p>
-    <p><strong>Publisher:</strong> {{ book.publisher }}</p>
-    <p><strong>Average Rating:</strong> {{ book.average_rating }}</p>
+	<div class='container'>
+    	<h2>Book Metadata and Recommendation</h2>
+    	<p><strong>Book:</strong> {{ book.title }}</p>
+    	<p><strong>ISBN:</strong> {{ book.isbn }}</p>
+    	<p><strong>Author:</strong> {{ book.author }}</p>
+    	<p><strong>Year of publishing:</strong> {{ book.year }}</p>
+    	<p><strong>Publisher:</strong> {{ book.publisher }}</p>
+    	<p><strong>Average Rating:</strong> {{ book.average_rating }}</p>
 
+		<button id='recommendButton'>Get Recommendations</button>
+
+		<div id='recommendations'></div>
+	</div>
+
+	<script>	
+		document.getElementById('recommendButton').onclick = async function() {
+			let bookIsbn = '{{ book.isbn }}';
+			
+			let response = await fetch(`/recommend?book=${encodeURIComponent(bookIsbn)}`);
+			let data = await response.json();
+
+			if (response.ok) {
+				if (data) {
+					let recommendations = data.map(rec => 
+							`<li>${rec.title} (Similarity: ${rec.similarity})</li>`
+
+	   				).join("");
+				}
+
+
+	   		document.getElementById('recommendations').innerHTML = `	
+				<h2>Recommended Books</h2>
+				<ul>${recommendations}</ul>
+				`;
+			} else {
+				document.getElementById('recommendations').innerHTML = `
+	   				<p style='color: red;'>Error: ${data.detail}</p>
+	   		`;
+			}
+		}
+	</script>
+	
     <br>
     <a href="/">Go Back</a>
 </body>

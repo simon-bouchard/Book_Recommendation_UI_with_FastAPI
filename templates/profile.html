@@ -11,8 +11,13 @@
 <body>
 	<h1>Book Recommendation API</h1>
 	<br><br>
+	<h2>Welcome {{ user.username }}</h2>
+	<br><br>
 	<h2>Profile</h2>
 	<br>
+	<p><strong>Username: </strong>{{ user.username }}</p>
+	<p><strong>Email: </strong>{{ user.email }}</p>
+	<br><br>
 	<h3>Post New Rating</h3>
 	<form id='ratingForm'>
 		<label for='isbn'>Book ISBN:</label>
@@ -53,6 +58,8 @@
 };
 </script>
 
+	<br><br>
+	<a href='/'>Home</a>
 	<br><br>
 	<a href='/logout'>Logout</a>
 
