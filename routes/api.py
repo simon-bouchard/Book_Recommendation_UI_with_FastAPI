@@ -31,6 +31,7 @@ client = MongoClient(os.getenv('MONGO_URI'))
 db = client['book-recommendation']
 ratings = db['ratings']
 books = db['Books']
+users = db['users']
 
 @router.get('/login', response_class=HTMLResponse)
 def signup_page(request: Request):
@@ -66,7 +67,7 @@ async def new_rating(current_user = Depends(get_current_user), data: dict = Body
     return {'message': f'Rating successfully submitted/updated!'}
 
 @router.get('/book/{isbn}', response_class=HTMLResponse)
-async def book_recommendation(request: Request, isbn: str): 
+async def book_recommendation(request: Request, isbn: str, current_user: dict = Depends(get_current_user)): 
 #    book = books_data.get(isbn)
 
     book = books.find_one({'isbn': isbn})
@@ -84,18 +85,21 @@ async def book_recommendation(request: Request, isbn: str):
     if not book: 
         raise HTTPException(status_code=404, detail='Book not found')
 
-    '''
     book = {
             'isbn': isbn,
-            'title': book['Book-Title'],
-            'author': book['Book-Author'],
-            'year': book['Year-Of-Publication'],
-            'publisher': book['Publisher'],
+            'title': book['title'],
+            'author': book['author'],
+            'year': book['year'],
+            'publisher': book['publisher'],
             'average_rating': average
     }
-    '''
-    
-    return templates.TemplateResponse('book.html', {"request": request, "book": book})
+
+    if not current_user: 
+        return templates.TemplateResponse('book.html', {"request": request, "book": book})
+
+    user_rating = ratings.find_one({'user_id': current_user['_id'], 'isbn': isbn})
+
+    return templates.TemplateResponse('book.html', {"request": request, "book": book, 'user_rating': user_rating})
 
 @router.get('/recommend')
 async def recommend_books(book: str = Query(...), isbn: bool = True):

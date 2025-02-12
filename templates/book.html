@@ -15,6 +15,12 @@
     	<p><strong>Year of publishing:</strong> {{ book.year }}</p>
     	<p><strong>Publisher:</strong> {{ book.publisher }}</p>
     	<p><strong>Average Rating:</strong> {{ book.average_rating }}</p>
+		<div id='userRating' style='display:none'>
+			<br>
+			<h3>Your Rating</h3>
+			<p><strong>Rating: </strong>{{ user_rating.rating }}</p>
+			<p><strong>Comment: </strong>{{ user_rating.comment }}</p>
+		</div>
 
 		<br><br>
 
@@ -26,6 +32,13 @@
 
 		<div id='recommendations'></div>
 	</div>
+
+	<script>
+		let user_rating = '{{ user_rating }}';
+		if (user_rating !== 'None') {
+			document.getElementById('userRating').style.display = 'block'
+		}
+	</script>
 
 	<script>
 		document.getElementById('commentsButton').onclick = async function() {
