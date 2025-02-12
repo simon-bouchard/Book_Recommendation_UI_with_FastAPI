@@ -1,5 +1,5 @@
+/* General Styles */
 * {
-    text-align: center;
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
@@ -10,50 +10,66 @@ body {
     background-color: #f8f9fa;
     color: #333;
     padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+h1, h2 {
+    text-align: center;
+    margin-bottom: 20px;
 }
 
 h1 {
     font-size: 2rem;
-    margin-bottom: 20px;
 }
 
 h2 {
     font-size: 1.5rem;
-    margin-bottom: 10px;
 }
 
+/* Forms */
 form {
     background: white;
-    padding: 20px;
-    border-radius: 8px;
+    padding: 25px;
+    border-radius: 10px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    display: inline-block;
-    text-align: left;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 400px;
+    width: 100%;
     margin-bottom: 20px;
+}
+
+form label {
+    align-self: flex-start;
+    font-weight: bold;
+    margin-top: 10px;
 }
 
 /* Inputs */
 input {
     width: 100%;
     padding: 10px;
-    margin: 10px 0;
+    margin-top: 5px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    display: block;
 }
 
 /* Buttons */
 button {
     background-color: #007bff;
     color: white;
-    padding: 10px 15px;
+    padding: 12px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-size: 1rem;
     transition: background 0.3s;
-	display: block;
-	margin:  10px auto;
+    width: 100%;
+    margin-top: 15px;
 }
 
 button:hover {
@@ -65,16 +81,36 @@ a {
     color: #007bff;
     text-decoration: none;
     font-weight: bold;
+    display: inline-block;
+    margin-top: 15px;
 }
 
 a:hover {
     text-decoration: underline;
 }
 
-/* Container for Form Pages */
+/* Page Layout */
 .container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 20px;
+    justify-content: center;
+    width: 100%;
+    max-width: 800px;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+/* Comments and Recommendations */
+#comments, #recommendations {
+    width: 100%;
+    max-width: 600px;
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
 }
