@@ -49,14 +49,14 @@
 
 			if (response.ok) {
 				let comments = data.map(com =>
-					`<li>${com.user_id}: ${com.comment}<strong>${com.rating}</strong></li>`
+					`<li>${com.username}: ${com.comment}<strong> ${com.rating}</strong></li>`
 				).join("");
 				
 				document.getElementById('comments').innerHTML = `
 	   				<h2>Comments</h2>
 	   				<ul>${comments}</ul>
-	   				;`
-				document.getElementById('commentButton').style.display = 'none';
+	   				`
+				document.getElementById('commentsButton').style.display = 'none';
 			} else {
 				document.getElementById('comments').innerHTML = `
 	   				<p style='color: red; '>Error: ${data.detail}</p>`;

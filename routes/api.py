@@ -14,18 +14,6 @@ from models.book_model import reload_model, get_recommendations
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
-'''
-BOOKS_CSV = 'data/BX-Books.csv'
-
-try:
-    df = pd.read_csv(BOOKS_CSV, encoding='ISO-8859-1', sep=';', usecols=['ISBN', 'Book-Title', 'Book-Author', 'Year-Of-Publication', 'Publisher'])
-    df.columns = df.columns.str.strip()
-    books_data = df.set_index('ISBN').to_dict(orient='index')
-except Exception as e:
-    print(f'Error loading books: {e}')
-    books_data = {}
-'''
-
 load_dotenv()
 client = MongoClient(os.getenv('MONGO_URI'))
 db = client['book-recommendation']
@@ -94,12 +82,29 @@ async def book_recommendation(request: Request, isbn: str, current_user: dict = 
             'average_rating': average
     }
 
-    if not current_user: 
-        return templates.TemplateResponse('book.html', {"request": request, "book": book})
+    user_rating = None
 
-    user_rating = ratings.find_one({'user_id': current_user['_id'], 'isbn': isbn})
+    if current_user: 
+        user_rating = ratings.find_one({'user_id': current_user['_id'], 'isbn': isbn})
 
     return templates.TemplateResponse('book.html', {"request": request, "book": book, 'user_rating': user_rating})
+
+@router.get('/comments')
+async def get_comments(book: str = Query(...), isbn: bool = True, limit: int = 5):
+    if not isbn:
+        db_book = await books.find_one({'title': book})
+        if db_book:
+            book = db_book['isbn']
+        else:
+            return {'error': 'Book not found'}
+        
+    comments = list(ratings.find({'isbn': book, 'comment': {'$ne': '', '$exists': True}}).limit(limit))
+
+    for comment in comments:
+        comment['username'] = users.find_one({'_id': comment['user_id']})['username']
+        comment['_id'] = str(comment['_id'])
+        comment['user_id'] = str(comment['user_id'])
+    return comments
 
 @router.get('/recommend')
 async def recommend_books(book: str = Query(...), isbn: bool = True):
