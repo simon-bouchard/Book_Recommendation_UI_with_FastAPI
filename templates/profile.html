@@ -16,8 +16,17 @@
 	<h2>Profile</h2>
 	<br>
 	<p><strong>Username: </strong>{{ user.username }}</p>
+	<p><strong>User Id: </strong>{{ user._id }}</p>
 	<p><strong>Email: </strong>{{ user.email }}</p>
+
 	<br><br>
+
+	<h2>User-Based Recommendations</h2>
+	<button id='recommendButton'>Get User-Based Recommendations</button>
+	<div id='recommendations'></div>
+
+	<br><br>
+
 	<h3>Post New Rating</h3>
 	<form id='ratingForm'>
 		<label for='isbn'>Book ISBN:</label>
@@ -31,6 +40,30 @@
 		<br><br>
 		<button type='submit'>Submit</button>
 	</form>
+
+	<script>
+		document.getElementById('recommendButton').onclick = async function() {
+					let user_id = '{{ user._id }}'.trim();
+
+					let response = await fetch(`/profile/recommend?user=${encodeURIComponent(user_id)}`);
+					let data = await response.json();
+
+					if (response.ok) {
+						let recommendations = data.map(rec =>
+									`<li><strong>${rec.title}</strong> (${rec.isbn}) - <strong>Score:</strong> ${rec.score}</li>`
+						).join("");
+
+						document.getElementById('recommendations').innerHTML = `
+	   						<ul>${recommendations}</ul>
+	   						`;
+						document.getElementById('recommendButton').style.display = 'none';
+					} else {
+						document.getElementById('recommendations').innerHTML = `
+	   						<p style='color: red;'>Error: ${data.detail}</p>
+	   						`;
+					}
+			}
+	</script>
 
 	<script>
 	document.getElementById("ratingForm").onsubmit = async function(event) {

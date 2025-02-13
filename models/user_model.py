@@ -52,7 +52,7 @@ async def reload_user_model():
 
     print('Model reloaded')
 
-async def get_user_recommendations(user: str, _id: bool = True):
+async def get_user_recommendations(user, _id: bool = True, n: int = 5):
 
     if _id:
         user_id = ObjectId(user)
@@ -81,7 +81,7 @@ async def get_user_recommendations(user: str, _id: bool = True):
         return {'error': 'No recommendations could be generated.'}
 
     book_scores = weighted_ratings.sum() / sum_similarity[0]
-    top_books = book_scores.nlargest(6)
+    top_books = book_scores.nlargest(n + 1)
 
     book_details = []
     for isbn, score in top_books.items():

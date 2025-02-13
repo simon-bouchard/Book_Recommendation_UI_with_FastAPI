@@ -9,7 +9,9 @@ from dotenv import load_dotenv
 import jwt
 from datetime import datetime, timedelta
 from app.auth import get_current_user
+from bson import ObjectId
 from models.book_model import reload_model, get_recommendations
+from models.user_model import reload_user_model, get_user_recommendations
 from datetime import datetime
 
 router = APIRouter()
@@ -117,6 +119,21 @@ async def recommend_books(book: str = Query(...), isbn: bool = True):
         return recommendations
     else:
         raise HTTPException(status_code=404, detail="Book not found (books with less than 100 ratings can't have recommendations.")
+
+@router.get('/profile/recommend')
+async def user_recommendation(user: str, _id: bool = True, n: int = 5):
+    if _id:
+        if not ObjectId.is_valid(user):
+            raise HTTPException(status_code=404, detail='Invalid BSON object format')
+        user = ObjectId(user)
+    recommendations = await get_user_recommendations(user, _id, n)
+
+    if 'error' in recommendations:
+        raise HTTPException(status_code=404, detail=recommendations['error'])
+    if recommendations:
+        return recommendations
+    else:
+        raise HTTPException(status_code=404, detail='Unexpected error retrieving recommendations')
 
 @router.get('/logout')
 async def logout():
