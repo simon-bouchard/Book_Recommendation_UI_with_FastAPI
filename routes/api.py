@@ -10,6 +10,7 @@ import jwt
 from datetime import datetime, timedelta
 from app.auth import get_current_user
 from models.book_model import reload_model, get_recommendations
+from datetime import datetime
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -46,7 +47,7 @@ async def new_rating(current_user = Depends(get_current_user), data: dict = Body
 
     ratings.update_one(
         {'user_id': current_user['_id'], 'isbn': isbn}, 
-        {"$set": {'rating': rating, 'comment': comment}},
+        {"$set": {'rating': rating, 'comment': comment, 'created_at': datetime.utcnow()}},
         upsert=True
     )
 

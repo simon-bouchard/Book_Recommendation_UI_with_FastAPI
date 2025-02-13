@@ -5,6 +5,7 @@ from sklearn.neighbors import NearestNeighbors
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 from dotenv import load_dotenv
+from bson import ObjectId
 
 book_user_matrix = None
 user_sparse_matrix = None
@@ -29,6 +30,8 @@ async def reload_user_model():
     if df_ratings.empty:
         return
 
+    df_ratings['user_id'] = df_ratings['user_id'].apply(lambda x: ObjectId(x) if isinstance(x, str) else x)
+
     user_count = df_ratings['user_id'].value_counts()
     valid_users = user_count[user_count >= 20].index
 
@@ -52,7 +55,7 @@ async def reload_user_model():
 async def get_user_recommendations(user: str, _id: bool = True):
 
     if _id:
-        user_id = user
+        user_id = ObjectId(user)
     else:
         user_entry = await users.find_one({'username': user})
         if not user_entry:
@@ -84,7 +87,7 @@ async def get_user_recommendations(user: str, _id: bool = True):
     for isbn, score in top_books.items():
         book = await books.find_one({'isbn': isbn})
         if book:
-            book_details.append({'isbn': isbn, 'title': book['title'], 'score': score})
+            book_details.append({'isbn': isbn, 'title': book['title'], 'score': round(score, 2)})
 
     return book_details
 

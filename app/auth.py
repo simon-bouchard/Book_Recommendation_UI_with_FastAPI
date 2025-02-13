@@ -1,8 +1,8 @@
 import jwt
 from datetime import datetime, timedelta
-from fastapi import APIRouter, HTTPException, Depends, Form, Request, status, Cookie
+from fastapi import APIRouter, HTTPException, Depends, Form, Request, status, Cookie, Response
 from fastapi.security import OAuth2PasswordBearer
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from motor.motor_asyncio import AsyncIOMotorClient
 from app.models import UserSignup, UserLogin, hash_password, verify_password
@@ -10,6 +10,7 @@ import os
 from dotenv import load_dotenv
 from pymongo import MongoClient
 from motor.motor_asyncio import AsyncIOMotorClient
+from datetime import datetime
 
 load_dotenv()
 
@@ -57,7 +58,7 @@ async def signup(request: Request, username: str = Form(...), email: str = Form(
         raise HTTPException(status_code=400, detail='Username already taken')
 
     hashed_password = hash_password(password)
-    new_user = {'username': username, 'email': email, 'password': hashed_password}
+    new_user = {'username': username, 'email': email, 'password': hashed_password, 'created_at': datetime.utcnow()}
 
     user = await users.insert_one(new_user)
 
@@ -69,6 +70,7 @@ async def signup(request: Request, username: str = Form(...), email: str = Form(
 
 @router.post('/auth/login', response_class=HTMLResponse)
 async def login(request: Request, username: str = Form(...), password: str = Form(...)):
+
     db_user = await users.find_one({'username': username})
 
     if not db_user:
@@ -79,5 +81,6 @@ async def login(request: Request, username: str = Form(...), password: str = For
     access_token = await create_access_token({'sub': username})
 
     response = RedirectResponse(url="/profile", status_code=status.HTTP_303_SEE_OTHER)
-    response.set_cookie(key="access_token", value=access_token, httponly=True)
+    response.set_cookie(key="access_token", value=access_token, httponly=True, max_age=3600)
+
     return response
