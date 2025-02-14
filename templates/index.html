@@ -4,40 +4,38 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>FastAPI test page</title>
+	<title>Book Recommendation</title>
 	<link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}">
 </head>
 
 <body>
-	<h1>Fast API Machine Learning Project</h1>
-	<br><br>
-	<h2>Book Recommendation</h2>
-	<p>Example usage: 0446672211 (Where the Heart Is (Oprah's Book Club (Paperback)))
-	<br><br>
-	<form id='bookForm'>
-		<label for='book'>Book ISBN:</label>
-		<input type='text' id='book' name='book' placeholder='0446672211' required>
-		<br>
-		<button type='submit'>Submit</button>
-	</form>
+	<div class="container">
+		<h1>FastAPI Machine Learning Project</h1>
+		<h2>Book Recommendation</h2>
+		<p>Example usage: 0446672211 (Where the Heart Is (Oprah's Book Club (Paperback)))</p>
+
+		<form id='bookForm'>
+			<label for='book'>Book ISBN:</label>
+			<input type='text' id='book' name='book' placeholder='0446672211' required>
+			<button type='submit'>Submit</button>
+		</form>
+
+		<a href='/profile'>Profile / Login / Sign up</a>
+	</div>
 
 	<script>
 		document.getElementById('bookForm').onsubmit = function(event) {
-					event.preventDefault();
+			event.preventDefault(); // Prevent form from reloading the page
 
-					let book = document.getElementById('book').value.trim();
-					if (!book) {
-						alert('Please neter a book name!');
-							event.preventDefault();
-							return;
-					}
+			let book = document.getElementById('book').value.trim();
+			if (!book) {
+				alert('Please enter a valid ISBN!');
+				return;
+			}
 
-					window.location.href = `/book/${encodeURIComponent(book)}`
+			// Fix: Redirect user to book details page with correct ISBN
+			window.location.href = `/book/${encodeURIComponent(book)}`;
 		};
 	</script>
-
-	<br><br>
-	<a href='/profile'>Profile/Login/Sign up</a>
-
 </body>
 </html>

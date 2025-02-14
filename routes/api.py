@@ -107,6 +107,9 @@ async def get_comments(book: str = Query(...), isbn: bool = True, limit: int = 5
         comment['username'] = users.find_one({'_id': comment['user_id']})['username']
         comment['_id'] = str(comment['_id'])
         comment['user_id'] = str(comment['user_id'])
+
+    if not comments:
+        raise HTTPException(status_code=404, detail='No comments have been submitted for this book yet')
     return comments
 
 @router.get('/recommend')

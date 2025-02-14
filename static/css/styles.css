@@ -1,13 +1,14 @@
-/* General Styles */
+/* General Reset */
 * {
-    font-family: Arial, sans-serif;
+    font-family: 'Arial', sans-serif;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+/* Page Layout */
 body {
-    background-color: #f8f9fa;
+    background-color: #f4f4f4;
     color: #333;
     padding: 20px;
     display: flex;
@@ -16,101 +17,128 @@ body {
     justify-content: center;
 }
 
-h1, h2 {
-    text-align: center;
+/* Containers */
+.container {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    max-width: 700px;
+    width: 100%;
+    text-align: left;
     margin-bottom: 20px;
 }
 
+/* Headings - Titles are now correctly positioned */
 h1 {
     font-size: 2rem;
+    color: #007bff;
+    text-align: center;
+    margin-bottom: 10px;
 }
 
-h2 {
-    font-size: 1.5rem;
+h2, h3 {
+    color: #0056b3;
+    margin-top: 5px; /* Moves closer to content */
+    margin-bottom: 5px; /* Ensures space between title and content */
+}
+
+form, p, button, div {
+    margin-top: 0;  /* Prevents extra space from pushing content down */
 }
 
 /* Forms */
 form {
-    background: white;
-    padding: 25px;
-    border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    background: transparent; /* No extra background boxes */
+    padding: 10px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    max-width: 400px;
     width: 100%;
-    margin-bottom: 20px;
+    max-width: 400px;
+    gap: 10px;
+    margin: auto;
 }
 
+/* Input Fields */
 form label {
-    align-self: flex-start;
     font-weight: bold;
-    margin-top: 10px;
+    margin-bottom: 3px;
 }
 
-/* Inputs */
-input {
+form input {
     width: 100%;
     padding: 10px;
-    margin-top: 5px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    font-size: 1rem;
 }
 
 /* Buttons */
 button {
-    background-color: #007bff;
+    background: #007bff;
     color: white;
-    padding: 12px;
+    padding: 10px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-size: 1rem;
-    transition: background 0.3s;
     width: 100%;
-    margin-top: 15px;
+    margin-top: 10px;
 }
 
 button:hover {
-    background-color: #0056b3;
+    background: #0056b3;
 }
 
 /* Links */
-a {
-    color: #007bff;
-    text-decoration: none;
-    font-weight: bold;
-    display: inline-block;
+.links {
+    display: flex;
+    justify-content: space-between;
     margin-top: 15px;
 }
 
-a:hover {
+.links a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.links a:hover {
     text-decoration: underline;
 }
 
-/* Page Layout */
-.container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+/* Profile Sections */
+.profile-info, .recommendation-section, .rating-section {
+    background: transparent; /* Removes unnecessary boxes */
+    padding: 15px;
+    text-align: left;
     width: 100%;
-    max-width: 800px;
-    padding: 20px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
 }
 
-/* Comments and Recommendations */
-#comments, #recommendations {
-    width: 100%;
+/* Centering Recommendations and Ratings */
+.recommendation-section, .rating-section {
     max-width: 600px;
-    background: #fff;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
-    margin-top: 20px;
+    margin: auto;
+}
+
+/* Ensuring Consistency for All Forms */
+.index-form-container, .login-container {
+    text-align: center;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .container {
+        width: 95%;
+        padding: 15px;
+    }
+
+    form {
+        width: 100%;
+    }
+
+    .links {
+        flex-direction: column;
+        text-align: center;
+    }
 }

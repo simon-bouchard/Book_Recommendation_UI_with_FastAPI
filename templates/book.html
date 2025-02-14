@@ -3,36 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Form Response</title>
+    <title>Book Details</title>
 	<link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}">
 </head>
 <body>
-	<div class='container'>
-    	<h2>Book Metadata and Recommendation</h2>
-    	<p><strong>Book:</strong> {{ book.title }}</p>
+
+	<div class="container">
+    	<h2>Book Details</h2>
+    	<p><strong>Title:</strong> {{ book.title }}</p>
     	<p><strong>ISBN:</strong> {{ book.isbn }}</p>
     	<p><strong>Author:</strong> {{ book.author }}</p>
-    	<p><strong>Year of publishing:</strong> {{ book.year }}</p>
+    	<p><strong>Year:</strong> {{ book.year }}</p>
     	<p><strong>Publisher:</strong> {{ book.publisher }}</p>
     	<p><strong>Average Rating:</strong> {{ book.average_rating }}</p>
-		<div id='userRating' style='display:none'>
-			<br>
-			<h3>Your Rating</h3>
-			<p><strong>Rating: </strong>{{ user_rating.rating }}</p>
-			<p><strong>Comment: </strong>{{ user_rating.comment }}</p>
-		</div>
 
-		<br><br>
+		<h3>Comments</h3>
+		<button id='commentsButton'>View Comments</button>
+		<div id='comments' style='display:none'></div>
 
-	   	<h2>Comments</h2>
-		<button id='commentsButton'>View comments from other users</button>
+		<h3>Recommended Books</h3>
+		<button id='recommendButton'>Get Recommendations</button>
+		<div id='recommendations' style='display: none'></div>
 
-		<div id='comments'></div>
-
-		<h2>Recommended Books</h2>
-		<button id='recommendButton'>Get Book-Based Recommendations</button>
-
-		<div id='recommendations'></div>
+		<a href="/">Go Back</a>
 	</div>
 
 	<script>
@@ -51,47 +44,39 @@
 
 			if (response.ok) {
 				let comments = data.map(com =>
-					`<li>${com.username}: ${com.comment}<strong> ${com.rating}</strong></li>`
+					`<li>${com.username}: ${com.comment} <strong>${com.rating}</strong></li>`
 				).join("");
-				
-				document.getElementById('comments').innerHTML = `
-	   				<ul>${comments}</ul>
-	   				`
+
+				document.getElementById('comments').innerHTML = `<ul>${comments}</ul>`;
+				document.getElementById('comments').style.display = 'block';
 				document.getElementById('commentsButton').style.display = 'none';
 			} else {
-				document.getElementById('comments').innerHTML = `
-	   				<p style='color: red; '>Error: ${data.detail}</p>`;
+				document.getElementById('comments').innerHTML = `<p style='color: red;'>Error: ${data.detail}</p>`;
+				document.getElementById('comments').style.display = 'block';
 			}
 		}
-
 	</script>
 
 	<script>	
 		document.getElementById('recommendButton').onclick = async function() {
 			let bookIsbn = '{{ book.isbn }}';
-			
+
 			let response = await fetch(`/recommend?book=${encodeURIComponent(bookIsbn)}`);
 			let data = await response.json();
 
 			if (response.ok) {
 				let recommendations = data.map(rec => 
 					`<li>${rec.title} (Similarity: ${rec.similarity})</li>`
+				).join("");
 
-	   			).join("");
-
-	   			document.getElementById('recommendations').innerHTML = `
-					<ul>${recommendations}</ul>
-					`;
+				document.getElementById('recommendations').innerHTML = `<ul>${recommendations}</ul>`;
+				document.getElementById('recommendations').style.display = 'block';
 				document.getElementById('recommendButton').style.display = 'none';
 			} else {
-				document.getElementById('recommendations').innerHTML = `
-	   				<p style='color: red;'>Error: ${data.detail}</p>
-	   		`;
+				document.getElementById('recommendations').innerHTML = `<p style='color: red;'>Error: ${data.detail}</p>`;
+				document.getElementById('recommendations').style.display = 'block';
 			}
 		}
 	</script>
-	
-    <br>
-    <a href="/">Go Back</a>
 </body>
 </html>
