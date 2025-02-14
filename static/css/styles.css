@@ -15,75 +15,94 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    min-height: 100vh;
 }
 
 /* Containers */
 .container {
     background: white;
     border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-    max-width: 700px;
+    padding: 30px;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
     width: 100%;
     text-align: left;
     margin-bottom: 20px;
 }
 
-/* Headings - Titles are now correctly positioned */
+.login-container {
+    background: white;
+    border-radius: 8px;
+    padding: 30px;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    width: 100%;
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+/* Headings */
 h1 {
-    font-size: 2rem;
+    font-size: 2.5rem;
     color: #007bff;
     text-align: center;
-    margin-bottom: 10px;
+    margin-top: 0; /* No top margin to keep it close to the top */
+    margin-bottom: 30px; /* Larger bottom margin to connect to the content below */
 }
 
-h2, h3 {
+h2 {
+    font-size: 2rem;
     color: #0056b3;
-    margin-top: 5px; /* Moves closer to content */
-    margin-bottom: 5px; /* Ensures space between title and content */
+    margin-top: 20px; /* Larger top margin to separate from the element above */
+    margin-bottom: 8px; /* Smaller bottom margin to connect to the content below */
 }
 
-form, p, button, div {
-    margin-top: 0;  /* Prevents extra space from pushing content down */
+h3 {
+    font-size: 1.5rem;
+    color: #004080;
+    margin-top: 20px; /* Larger top margin to separate from the element above */
+    margin-bottom: 8px; /* Smaller bottom margin to connect to the content below */
 }
 
 /* Forms */
 form {
-    background: transparent; /* No extra background boxes */
-    padding: 10px;
+    background: transparent;
+    padding: 20px;
     display: flex;
     flex-direction: column;
     width: 100%;
     max-width: 400px;
-    gap: 10px;
+    gap: 10px; /* Reduced gap for tighter spacing */
     margin: auto;
 }
 
-/* Input Fields */
 form label {
     font-weight: bold;
-    margin-bottom: 3px;
+    margin-bottom: 5px; /* Small bottom margin to connect to the input below */
 }
 
 form input {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 1rem;
+    margin-bottom: 15px; /* Larger bottom margin to separate from the next element */
 }
 
 /* Buttons */
 button {
     background: #007bff;
     color: white;
-    padding: 10px;
+    padding: 12px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-size: 1rem;
     width: 100%;
-    margin-top: 10px;
+    margin-top: 5px; /* Larger top margin to separate from the element above */
+    margin-bottom: 20px; /* Smaller bottom margin to connect to the element below */
+    transition: background 0.3s ease;
 }
 
 button:hover {
@@ -94,23 +113,25 @@ button:hover {
 .links {
     display: flex;
     justify-content: space-between;
-    margin-top: 15px;
+    margin-top: 20px;
 }
 
 .links a {
     color: #007bff;
     text-decoration: none;
     font-weight: bold;
+    transition: color 0.3s ease;
 }
 
 .links a:hover {
+    color: #0056b3;
     text-decoration: underline;
 }
 
 /* Profile Sections */
 .profile-info, .recommendation-section, .rating-section {
-    background: transparent; /* Removes unnecessary boxes */
-    padding: 15px;
+    background: transparent;
+    padding: 20px;
     text-align: left;
     width: 100%;
 }
@@ -121,16 +142,21 @@ button:hover {
     margin: auto;
 }
 
-/* Ensuring Consistency for All Forms */
-.index-form-container, .login-container {
-    text-align: center;
+/* Lists */
+ul {
+    padding-left: 20px; /* Add padding to align bullets with the rest of the content */
+    list-style-position: inside; /* Ensure bullets are inside the padding area */
+}
+
+li {
+    margin-bottom: 10px; /* Add spacing between list items */
 }
 
 /* Responsive Design */
 @media (max-width: 600px) {
-    .container {
+    .container, .login-container {
         width: 95%;
-        padding: 15px;
+        padding: 20px;
     }
 
     form {
@@ -140,5 +166,18 @@ button:hover {
     .links {
         flex-direction: column;
         text-align: center;
+        gap: 10px;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    h3 {
+        font-size: 1.25rem;
     }
 }

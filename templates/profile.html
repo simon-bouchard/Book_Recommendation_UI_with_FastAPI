@@ -1,94 +1,91 @@
 <!DOCTYPE html>
-<html lang='en-us'>
-
+<html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Profile | Book Recommendation</title>
-	<link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile | Book Recommendation</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}">
 </head>
-
 <body>
-	<div class="container">
-		<h1>Book Recommendation API</h1>
-		<h2>Welcome, {{ user.username }}</h2>
+    <div class="container">
+        <h1>Book Recommendation API</h1>
+        <h2 style='text-align:center'>Welcome, {{ user.username }}</h2>
 
-		<div class="profile-info">
-			<h3>Profile Information</h3>
-			<p><strong>Username:</strong> {{ user.username }}</p>
-			<p><strong>User ID:</strong> {{ user._id }}</p>
-			<p><strong>Email:</strong> {{ user.email }}</p>
-		</div>
+        <div class="profile-info">
+            <h3>Profile Information</h3>
+            <p><strong>Username:</strong> {{ user.username }}</p>
+            <p><strong>User ID:</strong> {{ user._id }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+        </div>
 
-		<h3>User-Based Recommendations</h3>
-		<button id="recommendButton">Get Recommendations</button>
-		<div id="recommendations" style="display: none"></div>
+        <h3>User-Based Recommendations</h3>
+        <button id="recommendButton">Get Recommendations</button>
+        <div id="recommendations" style="display: none"></div>
 
-		<h3>Post a New Rating</h3>
-		<form id="ratingForm">
-			<label for="isbn">Book ISBN:</label>
-			<input type="text" id="isbn" name="isbn" required>
+        <h3>Post a New Rating</h3>
+        <form id="ratingForm">
+            <label for="isbn">Book ISBN:</label>
+            <input type="text" id="isbn" name="isbn" required>
 
-			<label for="rating">Rating:</label>
-			<input type="text" id="rating" name="rating" required>
+            <label for="rating">Rating:</label>
+            <input type="text" id="rating" name="rating" required>
 
-			<label for="comment">Comment:</label>
-			<input type="text" id="comment" name="comment">
+            <label for="comment">Comment:</label>
+            <input type="text" id="comment" name="comment">
 
-			<button type="submit">Submit</button>
-		</form>
+            <button type="submit">Submit</button>
+        </form>
 
-		<div class="links">
-			<a href="/">Home</a>
-			<a href="/logout">Logout</a>
-		</div>
-	</div>
+        <div class="links">
+            <a href="/">Home</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </div>
 
-	<script>
-		document.getElementById('recommendButton').onclick = async function () {
-			let user_id = '{{ user._id }}'.trim();
+    <script>
+        document.getElementById('recommendButton').onclick = async function () {
+            let user_id = '{{ user._id }}'.trim();
 
-			let response = await fetch(`/profile/recommend?user=${encodeURIComponent(user_id)}`);
-			let data = await response.json();
+            let response = await fetch(`/profile/recommend?user=${encodeURIComponent(user_id)}`);
+            let data = await response.json();
 
-			if (response.ok) {
-				let recommendations = data.map(rec =>
-					`<li><strong>${rec.title}</strong> (${rec.isbn}) - <strong>Score:</strong> ${rec.score}</li>`
-				).join("");
+            if (response.ok) {
+                let recommendations = data.map(rec =>
+                    `<li><strong>${rec.title}</strong> (${rec.isbn}) - <strong>Score:</strong> ${rec.score}</li>`
+                ).join("");
 
-				document.getElementById('recommendations').innerHTML = `<ul>${recommendations}</ul>`;
-				document.getElementById('recommendations').style.display = 'block';
-				document.getElementById('recommendButton').style.display = 'none';
-			} else {
-				document.getElementById('recommendations').innerHTML = `<p style='color: red;'>Error: ${data.detail}</p>`;
-				document.getElementById('recommendations').style.display = 'block';
-			}
-		};
+                document.getElementById('recommendations').innerHTML = `<ul>${recommendations}</ul>`;
+                document.getElementById('recommendations').style.display = 'block';
+                document.getElementById('recommendButton').style.display = 'none';
+            } else {
+                document.getElementById('recommendations').innerHTML = `<p style='color: red;'>Error: ${data.detail}</p>`;
+                document.getElementById('recommendations').style.display = 'block';
+            }
+        };
 
-		document.getElementById("ratingForm").onsubmit = async function (event) {
-			event.preventDefault();
+        document.getElementById("ratingForm").onsubmit = async function (event) {
+            event.preventDefault();
 
-			let data = {
-				isbn: document.getElementById("isbn").value,
-				rating: document.getElementById("rating").value,
-				comment: document.getElementById("comment").value
-			};
+            let data = {
+                isbn: document.getElementById("isbn").value,
+                rating: document.getElementById("rating").value,
+                comment: document.getElementById("comment").value
+            };
 
-			let response = await fetch("/rating", {
-				method: "POST",
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(data),
-				redirect: 'manual'
-			});
+            let response = await fetch("/rating", {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+                redirect: 'manual'
+            });
 
-			if (response.redirected) {
-				window.location.href = response.url;
-			} else {
-				let result = await response.json();
-				alert(result.message);
-			}
-		};
-	</script>
+            if (response.redirected) {
+                window.location.href = response.url;
+            } else {
+                let result = await response.json();
+                alert(result.message);
+            }
+        };
+    </script>
 </body>
-
 </html>

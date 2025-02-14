@@ -1,41 +1,41 @@
 <!DOCTYPE html>
-<html lang='en-us'>
-
+<html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Book Recommendation</title>
-	<link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Recommendation</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}">
 </head>
-
 <body>
-	<div class="container">
-		<h1>FastAPI Machine Learning Project</h1>
-		<h2>Book Recommendation</h2>
-		<p>Example usage: 0446672211 (Where the Heart Is (Oprah's Book Club (Paperback)))</p>
+    <div class="container">
+        <h1>FastAPI Machine Learning Project</h1>
+        <h2>Book Recommendation</h2>
+        <p>Example usage: 0446672211 (Where the Heart Is (Oprah's Book Club (Paperback)))</p>
 
-		<form id='bookForm'>
-			<label for='book'>Book ISBN:</label>
-			<input type='text' id='book' name='book' placeholder='0446672211' required>
-			<button type='submit'>Submit</button>
-		</form>
+        <form id="bookForm">
+            <label for="book">Book ISBN:</label>
+            <input type="text" id="book" name="book" placeholder="0446672211" required>
+            <button type="submit">Submit</button>
+        </form>
 
-		<a href='/profile'>Profile / Login / Sign up</a>
-	</div>
+        <div class="links">
+            <a href="/profile">Profile / Login / Sign up</a>
+        </div>
+    </div>
 
-	<script>
-		document.getElementById('bookForm').onsubmit = function(event) {
-			event.preventDefault(); // Prevent form from reloading the page
+    <script>
+        document.getElementById('bookForm').onsubmit = function(event) {
+            event.preventDefault(); // Prevent form from reloading the page
 
-			let book = document.getElementById('book').value.trim();
-			if (!book) {
-				alert('Please enter a valid ISBN!');
-				return;
-			}
+            let book = document.getElementById('book').value.trim();
+            if (!book) {
+                alert('Please enter a valid ISBN!');
+                return;
+            }
 
-			// Fix: Redirect user to book details page with correct ISBN
-			window.location.href = `/book/${encodeURIComponent(book)}`;
-		};
-	</script>
+            // Fix: Redirect user to book details page with correct ISBN
+            window.location.href = `/book/${encodeURIComponent(book)}`;
+        };
+    </script>
 </body>
 </html>

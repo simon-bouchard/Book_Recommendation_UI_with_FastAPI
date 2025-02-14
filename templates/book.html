@@ -4,79 +4,80 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Book Details</title>
-	<link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}">
 </head>
 <body>
+    <div class="container">
+        <h2>Book Details</h2>
+        <p><strong>Title:</strong> {{ book.title }}</p>
+        <p><strong>ISBN:</strong> {{ book.isbn }}</p>
+        <p><strong>Author:</strong> {{ book.author }}</p>
+        <p><strong>Year:</strong> {{ book.year }}</p>
+        <p><strong>Publisher:</strong> {{ book.publisher }}</p>
+        <p><strong>Average Rating:</strong> {{ book.average_rating }}</p>
 
-	<div class="container">
-    	<h2>Book Details</h2>
-    	<p><strong>Title:</strong> {{ book.title }}</p>
-    	<p><strong>ISBN:</strong> {{ book.isbn }}</p>
-    	<p><strong>Author:</strong> {{ book.author }}</p>
-    	<p><strong>Year:</strong> {{ book.year }}</p>
-    	<p><strong>Publisher:</strong> {{ book.publisher }}</p>
-    	<p><strong>Average Rating:</strong> {{ book.average_rating }}</p>
+        <h3>Comments</h3>
+        <button id="commentsButton">View Comments</button>
+        <div id="comments" style="display:none"></div>
 
-		<h3>Comments</h3>
-		<button id='commentsButton'>View Comments</button>
-		<div id='comments' style='display:none'></div>
+        <h3>Recommended Books</h3>
+        <button id="recommendButton">Get Recommendations</button>
+        <div id="recommendations" style="display: none"></div>
 
-		<h3>Recommended Books</h3>
-		<button id='recommendButton'>Get Recommendations</button>
-		<div id='recommendations' style='display: none'></div>
+        <div class="links">
+            <a href="/">Go Back</a>
+        </div>
+    </div>
 
-		<a href="/">Go Back</a>
-	</div>
+    <script>
+        let user_rating = '{{ user_rating }}';
+        if (user_rating !== 'None') {
+            document.getElementById('userRating').style.display = 'block';
+        }
+    </script>
 
-	<script>
-		let user_rating = '{{ user_rating }}';
-		if (user_rating !== 'None') {
-			document.getElementById('userRating').style.display = 'block'
-		}
-	</script>
+    <script>
+        document.getElementById('commentsButton').onclick = async function() {
+            let bookIsbn = '{{ book.isbn }}';
 
-	<script>
-		document.getElementById('commentsButton').onclick = async function() {
-			let bookIsbn = '{{ book.isbn }}';
+            let response = await fetch(`/comments?book=${encodeURIComponent(bookIsbn)}`);
+            let data = await response.json();
 
-			let response = await fetch(`/comments?book=${encodeURIComponent(bookIsbn)}`);
-			let data = await response.json();
+            if (response.ok) {
+                let comments = data.map(com =>
+                    `<li>${com.username}: ${com.comment} <strong>${com.rating}</strong></li>`
+                ).join("");
 
-			if (response.ok) {
-				let comments = data.map(com =>
-					`<li>${com.username}: ${com.comment} <strong>${com.rating}</strong></li>`
-				).join("");
+                document.getElementById('comments').innerHTML = `<ul>${comments}</ul>`;
+                document.getElementById('comments').style.display = 'block';
+                document.getElementById('commentsButton').style.display = 'none';
+            } else {
+                document.getElementById('comments').innerHTML = `<p style='color: red;'>Error: ${data.detail}</p>`;
+                document.getElementById('comments').style.display = 'block';
+            }
+        }
+    </script>
 
-				document.getElementById('comments').innerHTML = `<ul>${comments}</ul>`;
-				document.getElementById('comments').style.display = 'block';
-				document.getElementById('commentsButton').style.display = 'none';
-			} else {
-				document.getElementById('comments').innerHTML = `<p style='color: red;'>Error: ${data.detail}</p>`;
-				document.getElementById('comments').style.display = 'block';
-			}
-		}
-	</script>
+    <script>
+        document.getElementById('recommendButton').onclick = async function() {
+            let bookIsbn = '{{ book.isbn }}';
 
-	<script>	
-		document.getElementById('recommendButton').onclick = async function() {
-			let bookIsbn = '{{ book.isbn }}';
+            let response = await fetch(`/recommend?book=${encodeURIComponent(bookIsbn)}`);
+            let data = await response.json();
 
-			let response = await fetch(`/recommend?book=${encodeURIComponent(bookIsbn)}`);
-			let data = await response.json();
+            if (response.ok) {
+                let recommendations = data.map(rec =>
+                    `<li>${rec.title} (Similarity: ${rec.similarity})</li>`
+                ).join("");
 
-			if (response.ok) {
-				let recommendations = data.map(rec => 
-					`<li>${rec.title} (Similarity: ${rec.similarity})</li>`
-				).join("");
-
-				document.getElementById('recommendations').innerHTML = `<ul>${recommendations}</ul>`;
-				document.getElementById('recommendations').style.display = 'block';
-				document.getElementById('recommendButton').style.display = 'none';
-			} else {
-				document.getElementById('recommendations').innerHTML = `<p style='color: red;'>Error: ${data.detail}</p>`;
-				document.getElementById('recommendations').style.display = 'block';
-			}
-		}
-	</script>
+                document.getElementById('recommendations').innerHTML = `<ul>${recommendations}</ul>`;
+                document.getElementById('recommendations').style.display = 'block';
+                document.getElementById('recommendButton').style.display = 'none';
+            } else {
+                document.getElementById('recommendations').innerHTML = `<p style='color: red;'>Error: ${data.detail}</p>`;
+                document.getElementById('recommendations').style.display = 'block';
+            }
+        }
+    </script>
 </body>
 </html>

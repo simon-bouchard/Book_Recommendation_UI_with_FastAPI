@@ -1,40 +1,37 @@
 <!DOCTYPE html>
-<html lang='en-us'>
-
+<html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Login | Book Recommendation</title>
-	<link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Book Recommendation</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}">
 </head>
-
 <body>
-	<div class="login-container">
-		<h1>Book Recommendation</h1>
-		<h2>Log in</h2>
-		<form id='login' method='post' action='/auth/login'>
-			<input type='text' name='username' placeholder='Username' required>
-			<input type='password' name='password' placeholder='Password' required>
-			<button type='submit'>Login</button>
-		</form>
+    <div class="login-container">
+        <h1>Book Recommendation</h1>
+        <h2>Log in</h2>
+        <form id="login" method="post" action="/auth/login">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
 
-		<h2>Sign up</h2>
-		<form id='signup' method='post' action='/auth/signup'>
-			<label for='username'>Username:</label>
-			<input type='text' id='username' name='username' required>
+        <h2>Sign up</h2>
+        <form id="signup" method="post" action="/auth/signup">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
 
-			<label for='email'>Email:</label>
-			<input type='email' id='email' name='email' required>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
 
-			<label for='password'>Password:</label>
-			<input type='password' id='password' name='password' required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
 
-			<label for='repeat_password'>Repeat Password:</label>
-			<input type='password' id='repeat_password' name='repeat_password' required>
+            <label for="repeat_password">Repeat Password:</label>
+            <input type="password" id="repeat_password" name="repeat_password" required>
 
-			<button type='submit'>Sign Up</button>
-		</form>
-	</div>
+            <button type="submit">Sign Up</button>
+        </form>
+    </div>
 </body>
-
 </html>
