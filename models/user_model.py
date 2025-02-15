@@ -81,13 +81,19 @@ async def get_user_recommendations(user, _id: bool = True, n: int = 5):
         return {'error': 'No recommendations could be generated.'}
 
     book_scores = weighted_ratings.sum() / sum_similarity[0]
-    top_books = book_scores.nlargest(n + 1)
+    top_books = book_scores.nlargest(len(book_scores))
+
+    user_ratings = await ratings.find({'user_id': user_id}).to_list(None)
+    rated_books = {rating['isbn'] for rating in user_ratings}
 
     book_details = []
     for isbn, score in top_books.items():
-        book = await books.find_one({'isbn': isbn})
-        if book:
-            book_details.append({'isbn': isbn, 'title': book['title'], 'score': round(score, 2)})
+        if isbn not in rated_books:
+            book = await books.find_one({'isbn': isbn})
+            if book:
+                book_details.append({'isbn': isbn, 'title': book['title'], 'score': round(score, 2)})
+        if len(book_details) >= n:
+            break
 
     return book_details
 
