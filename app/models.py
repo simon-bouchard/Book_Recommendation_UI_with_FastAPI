@@ -1,33 +1,45 @@
-from pydantic import BaseModel, Field, EmailStr
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime
+from sqlalchemy.orm import relationship
+from app.database import Base
 from datetime import datetime
-from typing import Optional
-from passlib.context import CryptContext
 
-pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
+class Book(Base):
+    __tablename__ = 'books'
 
-def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
+    isbn = Column(String(13), primary_key=True, index=True)
+    title = Column(String(255), index=True)
+    author = Column(String(255))
+    genre = Column(String(255))
+    year = Column(Integer)
+    publisher = Column(String(255))
+    image_url_s = Column(String(255))
+    image_url_m = Column(String(255))
+    image_url_l = Column(String(255))
 
-def verify_password(plain_password, hashed_password) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
+    ratings = relationship('Rating', back_populates='book')
 
-class UserSignup(BaseModel):
-    location: str 
-    username: str 
-    email: EmailStr = Field(default='unknown@example.com')
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    password: str
+class User(Base):
+    __tablename__ = 'users'
 
-class UserLogin(BaseModel):
-    username: str
-    password: str
+    id = Column(Integer, primary_key=True, autoincrement=True, index=True)
+    username = Column(String(255), default='test_user')
+    email= Column(String(255), default='test_user@example.com')
+    password = Column(String(255), default='test')
+    created_at = Column(DateTime, default=datetime.utcnow)
+    age = Column(Integer)
+    country = Column(String(255))
+    
+    ratings = relationship('Rating', back_populates='user')
 
-class Rating(BaseModel):
-    user_id: str
-    isbn: str
-    rating: int = Field(ge=0, le=10)
-    timestamp: datetime = Field(dafault_factory=datetime.utcnow)
+class Rating(Base):
+    __tablename__ = 'ratings'
 
-class Book(BaseModel):
-    id: str = Field(..., alias='_id')
+    id = Column(Integer, primary_key=True, autoincrement=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    book_isbn = Column(String(13), ForeignKey('books.isbn'))
+    rating = Column(Integer)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    comment = Column(String(255))
 
+    user = relationship('User', back_populates='ratings')
+    book = relationship('Book', back_populates='ratings')
