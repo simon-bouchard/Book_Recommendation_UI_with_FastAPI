@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import os
 import sys
 from dotenv import load_dotenv
@@ -12,6 +13,7 @@ from app.database import DATABASE_URL
 from app.models import Book
 
 df = pd.read_csv('BX-Books.csv', encoding='ISO-8859-1', sep=';', quotechar='"', engine='python', on_bad_lines='skip')
+df = df.replace({np.nan: None})
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(bind=engine)
@@ -28,7 +30,7 @@ for _, row in df.iterrows():
         image_url_m=row["Image-URL-M"],
         image_url_l=row["Image-URL-L"],
     )
-    db.add(book)
+    db.merge(book)
 
 db.commit()
 db.close()

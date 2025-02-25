@@ -13,6 +13,9 @@ from bson import ObjectId
 from models.book_model import reload_model, get_recommendations
 from models.user_model import reload_user_model, get_user_recommendations
 from datetime import datetime
+from sqlachemy.orm import Session
+from app.database import SessionLocal, get_db
+from app.models import Book, User, Rating
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -58,10 +61,13 @@ async def new_rating(current_user = Depends(get_current_user), data: dict = Body
     return {'message': f'Rating successfully submitted/updated!'}
 
 @router.get('/book/{isbn}', response_class=HTMLResponse)
-async def book_recommendation(request: Request, isbn: str, current_user: dict = Depends(get_current_user)): 
+async def book_recommendation(request: Request, isbn: str, current_user: dict = Depends(get_current_user), db: Session = Depends(get_db)): 
 #    book = books_data.get(isbn)
 
-    book = books.find_one({'isbn': isbn})
+    #book = books.find_one({'isbn': isbn})
+    book = db.query(Book).filter(Book.isbn == isbn).first()
+    if not book:
+        raise HTTPException(status_code=404, detail='Book not found')
 
     pipeline = [
         {"$match": {"isbn": isbn}},
@@ -78,10 +84,11 @@ async def book_recommendation(request: Request, isbn: str, current_user: dict = 
 
     book = {
             'isbn': isbn,
-            'title': book['title'],
-            'author': book['author'],
-            'year': book['year'],
-            'publisher': book['publisher'],
+            'title': book.title,
+            'author': book.author,
+            'genre': book.genre,
+            'year': book.year,
+            'publisher': book.publisher,
             'average_rating': average
     }
 

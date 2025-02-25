@@ -14,5 +14,7 @@ passlib
 secrets
 scipy
 scikit-learn
-random
-time
+tqdm
+sqlalchemy
+requests
+pymysql
