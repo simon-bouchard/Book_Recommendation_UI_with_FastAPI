@@ -5,6 +5,10 @@ from sklearn.neighbors import NearestNeighbors
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 from dotenv import load_dotenv
+from app.table_models import Book, User, Rating
+from app.database import get_db, SessionLocal
+from sqlalchemy.orm import Session
+from fastapi import Depends
 
 user_book_matrix = None
 sparse_matrix = None
@@ -48,22 +52,28 @@ async def reload_model():
 
     print('Model reloaded')
 
-async def get_recommendations(book: str, isbn: bool = True):
+async def get_recommendations(book: str, isbn: bool = True, db: Session = None):
+
+    if db is None:
+        db = SessionLocal()
 
     if isbn:
-        book_isbn = book
+        book_isbn = book.strip()
     else:
-        book_entry = await books.find_one({'title': book})
-        book_isbn = book_entry.get('isbn')
+        book_entry = db.query(Book).filter(Book.title == book).first() #await books.find_one({'title': book})
+        book_isbn = book_entry.isbn
 
     if not book_isbn:
-        return { 'error': "Book not found (books with less than 100 ratings can't get recommendations)"}
+        return { 'error': "Book not found"}
+    print(f"Processed book_isbn: {book_isbn}")
 
     if book_model is None or user_book_matrix is None or isbn_to_index is None:
         await reload_model()
+    print(list(isbn_to_index.keys())[:5])
     
-    if book_isbn not in isbn_to_index:
-        return { 'error': "Book not found (books with less than 100 ratings can't get recommendations)"}
+    if str(book_isbn) not in isbn_to_index:
+        print(f"ISBN {book_isbn} not found in isbn_to_index. Available ISBNs: {list(isbn_to_index.keys())[:5]}")
+        return { 'error': "Book not found ** (books with less than 100 ratings can't get recommendations)"}
 
     query_index = isbn_to_index[book_isbn]
 
@@ -73,9 +83,9 @@ async def get_recommendations(book: str, isbn: bool = True):
 
     for idx, dist in zip(indices[0][-1:0:-1], distances[0][-1:0:-1]):
         neighbor_isbn = user_book_matrix.index[idx]
-        book_result = await books.find_one({'isbn': neighbor_isbn})
+        book_result = db.query(Book).filter(Book.isbn == neighbor_isbn).first() #await books.find_one({'isbn': neighbor_isbn})
         if book_result: 
-            recommendations.append({'title': book_result['title'], 'similarity': round(float(dist), 2)})
+            recommendations.append({'title': book_result.title, 'similarity': round(float(dist), 2)})
         
     return recommendations
 

@@ -13,9 +13,9 @@ from bson import ObjectId
 from models.book_model import reload_model, get_recommendations
 from models.user_model import reload_user_model, get_user_recommendations
 from datetime import datetime
-from sqlachemy.orm import Session
+from sqlalchemy.orm import Session
 from app.database import SessionLocal, get_db
-from app.models import Book, User, Rating
+from app.table_models import Book, User, Rating
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -100,11 +100,11 @@ async def book_recommendation(request: Request, isbn: str, current_user: dict = 
     return templates.TemplateResponse('book.html', {"request": request, "book": book, 'user_rating': user_rating})
 
 @router.get('/comments')
-async def get_comments(book: str = Query(...), isbn: bool = True, limit: int = 5):
+async def get_comments(book: str = Query(...), isbn: bool = True, limit: int = 5, db: Session = Depends(get_db)):
     if not isbn:
-        db_book = await books.find_one({'title': book})
+        db_book = db.query(Book).filter(Book.title == book).first() #await books.find_one({'title': book})
         if db_book:
-            book = db_book['isbn']
+            book = db_book.isbn
         else:
             return {'error': 'Book not found'}
         
@@ -128,7 +128,7 @@ async def recommend_books(book: str = Query(...), isbn: bool = True):
     if recommendations:
         return recommendations
     else:
-        raise HTTPException(status_code=404, detail="Book not found (books with less than 100 ratings can't have recommendations.")
+        raise HTTPException(status_code=404, detail="Book not found (books with less than 100 ratings can't have recommendations.)")
 
 @router.get('/profile/recommend')
 async def user_recommendation(user: str, _id: bool = True, n: int = 5):

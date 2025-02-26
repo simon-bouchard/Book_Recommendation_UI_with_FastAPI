@@ -10,10 +10,12 @@ from app.database import get_db
 
 app = FastAPI()
 
+"""
 @app.on_event('startup')
 async def startup_event():
     await reload_model()
     await reload_user_model()
+"""
 
 app.mount('/static', StaticFiles(directory='static'), name='static')
 
