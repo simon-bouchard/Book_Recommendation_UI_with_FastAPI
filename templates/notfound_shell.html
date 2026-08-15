@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" href="/static/favicon.ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Page Not Found — BookRec</title>
+  <link rel="stylesheet" href="/static/dist/assets/styles.css" />
+</head>
+<body>
+  <div id="root" data-logged-in="{{ 'true' if request.cookies.get('access_token') else 'false' }}"></div>
+  <script type="module" src="/static/dist/assets/notfound-app.js"></script>
+</body>
+</html>

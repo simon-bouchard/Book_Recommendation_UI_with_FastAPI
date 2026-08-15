@@ -21,6 +21,7 @@ export default defineConfig(({ mode }) => ({
         'login-app': path.resolve(__dirname, 'login.html'),
         'signup-app': path.resolve(__dirname, 'signup.html'),
         'home-app': path.resolve(__dirname, 'home.html'),
+        'notfound-app': path.resolve(__dirname, 'notfound.html'),
       },
       output: {
         entryFileNames: 'assets/[name].js',

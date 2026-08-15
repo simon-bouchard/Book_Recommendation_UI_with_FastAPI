@@ -17,6 +17,7 @@ from fastapi import Depends, FastAPI, Request
 from fastapi.responses import HTMLResponse, JSONResponse, ORJSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.sessions import SessionMiddleware
 
 from app.telemetry.tracing import setup_tracing, shutdown_tracing
@@ -208,6 +209,21 @@ app.add_middleware(SessionMiddleware, secret_key=os.getenv("SECRET_KEY"))
 
 templates = Jinja2Templates(directory="templates")
 templates.env.globals["now"] = datetime.utcnow
+
+
+@app.exception_handler(StarletteHTTPException)
+async def not_found_handler(request: Request, exc: StarletteHTTPException):
+    """
+    Render the friendly not-found page for browser navigation to a missing
+    page (unmatched routes, or a 404 raised by a page route like a bad book
+    id). API clients (JSON Accept header) keep the default JSON error body,
+    since routes like /book/{item_idx}/json rely on that behavior.
+    """
+    if exc.status_code == 404 and "text/html" in request.headers.get("accept", ""):
+        return templates.TemplateResponse(
+            "notfound_shell.html", {"request": request}, status_code=404
+        )
+    return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
 
 
 # ===========================================================================
